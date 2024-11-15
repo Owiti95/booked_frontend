@@ -1,31 +1,43 @@
-// src/App.jsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Navbar from './components/Navbar';  // Corrected path
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Carts from './pages/Carts'; // Import the Carts page
-import LendingCart from './pages/LendingCart'; // Import Lending Cart
-import PurchaseCart from './pages/PurchaseCart'; // Import Purchase Cart
-import BorrowingCart from './pages/BorrowingCart'; // Import Borrowing Cart
-import Shop from './components/Shop'; // Import the Shop component
+import AdminDashboard from './pages/AdminDashboard';
+import UserDashboard from './pages/UserDashboard';
+import Library from './pages/Library';  // Ensure this import exists
 import './styles/App.css';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const loginUser = (isAdmin) => {
+    setIsAuthenticated(true);
+    setIsAdmin(isAdmin);
+  };
+
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/carts" element={<Carts />} /> {/* Route for Carts */}
-        <Route path="/carts/lending" element={<LendingCart />} /> {/* Route for Lending Cart */}
-        <Route path="/carts/purchase" element={<PurchaseCart />} /> {/* Route for Purchase Cart */}
-        <Route path="/carts/borrowing" element={<BorrowingCart />} /> {/* Route for Borrowing Cart */}
-        <Route path="/shop" element={<Shop />} /> {/* Route for Shop */}
-      </Routes>
+      <Navbar isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
+      <div className="main-container">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login loginUser={loginUser} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/library" element={<Library />} />  {/* Ensure this route is present */}
+
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" 
+            element={isAuthenticated && isAdmin ? <AdminDashboard /> : <Navigate to="/login" />} />
+
+          {/* User Routes */}
+          <Route path="/user/dashboard" 
+            element={isAuthenticated && !isAdmin ? <UserDashboard /> : <Navigate to="/login" />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

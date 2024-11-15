@@ -1,26 +1,55 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../redux/slices/authSlice';
+import '../styles/Login.css'; // Import Login.css
 
-function Login() {
+const Login = ({ loginUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
+  const [error, setError] = useState(null);
 
-  const handleLogin = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    // Mock login action
-    dispatch(loginSuccess({ email }));
+
+    // Here you'd call your API for authentication instead of hardcoding.
+    if (email === 'admin@example.com' && password === 'admin123') {
+      loginUser(true);
+      // Redirect or perform other actions for admin user
+    } else if (email === 'user@example.com' && password === 'user123') {
+      loginUser(false);
+      // Redirect or perform other actions for normal user
+    } else {
+      setError('Invalid email or password');
+    }
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <div className="login-container">
       <h2>Login</h2>
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="form-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+            className="form-input"
+          />
+        </div>
+        <div className="form-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+            className="form-input"
+          />
+        </div>
+        <button type="submit" className="submit-btn">Login</button>
+        {error && <p className="error-message">{error}</p>} {/* Display error message */}
+      </form>
+    </div>
   );
-}
+};
 
 export default Login;
